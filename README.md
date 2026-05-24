@@ -1,21 +1,38 @@
 # DevOps
 
-A DevOps learning and reference archive covering AWS, Azure, CI/CD, Terraform, YAML, and revision notes.
+Serious DevOps learning and reference archive covering Linux, Git, Jenkins, Maven, Tomcat, Docker, Kubernetes, Terraform, AWS, and Azure.
+
+This repository is intentionally an archive, but it now has a learning spine so the material reads as a coherent DevOps path instead of disconnected notes.
 
 ## Structure
 
 ```text
-DevOps-AWS/
-DevOps-Azure/
-Revision/
+DevOps-AWS/       AWS, Jenkins, Terraform, Tomcat, YAML, and pipeline notes
+DevOps-Azure/     Azure Terraform labs
+Revision/         Docker and container revision examples
+docs/
+  roadmap.md
+  labs-index.md
+  command-checklist.md
+  production-readiness.md
 ```
 
-## Status
+## Learning Path
 
-Baseline repository structure is complete:
+1. Linux, Git, and shell fundamentals
+2. CI with Jenkins
+3. Java build and deployment with Maven and Tomcat
+4. Docker images and containers
+5. Kubernetes workloads and services
+6. Terraform infrastructure as code
+7. AWS and Azure deployment patterns
+8. Monitoring, quality gates, and release discipline
 
-- cloud-specific folders
-- infrastructure and pipeline examples
-- revision notes
-- root README
-- root `.gitignore`
+## Recommended Portfolio Use
+
+Keep this repository as a learning archive. For showcase work, extract polished labs into separate focused repos such as:
+
+- `terraform-aws-webapp`
+- `jenkins-tomcat-pipeline`
+- `docker-kubernetes-labs`
+- `azure-terraform-foundations`
