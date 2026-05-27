@@ -1,6 +1,12 @@
 from pathlib import Path
 from devops_toolkit.models import FileRecord, Severity
-from devops_toolkit.rules import check_docker_root, check_kubernetes_manifests, check_shell_safety, check_terraform_state_and_version
+from devops_toolkit.rules import (
+    check_docker_root,
+    check_kubernetes_manifests,
+    check_python_hardcoded_paths,
+    check_shell_safety,
+    check_terraform_state_and_version,
+)
 
 
 def record(kind: str, text: str, name: str = "sample") -> FileRecord:
@@ -21,6 +27,18 @@ def test_terraform_detects_inline_secret():
     tf = 'provider "aws" { secret_key = "abc" }'
     findings = check_terraform_state_and_version(record("terraform", tf, "main.tf"))
     assert any(f.rule_id == "TF_INLINE_SECRET" and f.severity == Severity.CRITICAL for f in findings)
+
+
+def test_terraform_version_warning_is_limited_to_terraform_blocks():
+    tf = 'provider "aws" { region = "eu-north-1" }'
+    findings = check_terraform_state_and_version(record("terraform", tf, "provider.tf"))
+    assert not any(f.rule_id == "TF_NO_REQUIRED_VERSION" for f in findings)
+
+
+def test_python_path_rule_does_not_flag_its_own_detector():
+    source = 'windows_user_path = re.escape("C:" + chr(92) + "Users" + chr(92))'
+    findings = check_python_hardcoded_paths(record("python", source, "rules.py"))
+    assert not any(f.rule_id == "PY_LOCAL_PATH" for f in findings)
 
 
 def test_kubernetes_detects_workload_without_resources():

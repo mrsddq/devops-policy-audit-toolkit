@@ -1,6 +1,13 @@
 pipeline {
     agent any
 
+    options {
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        disableConcurrentBuilds()
+    }
+
     stages {
         stage('SCM-Checkout') {
             steps {
@@ -26,6 +33,12 @@ pipeline {
             steps {
                 echo 'archive stage'
             }
+        }
+    }
+
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
         }
     }
 }

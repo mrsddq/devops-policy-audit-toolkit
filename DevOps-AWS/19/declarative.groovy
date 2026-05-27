@@ -3,6 +3,17 @@ currentBuild.displayName = 'tomcat-build - ' + currentBuild.number
 pipeline {
     agent any
 
+    options {
+        timestamps()
+        timeout(time: 45, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        disableConcurrentBuilds()
+    }
+
+    environment {
+        TOMCAT_HOST = credentials('tomcat-host')
+    }
+
     tools {
         maven 'MVN_HOME'
     }
@@ -22,12 +33,18 @@ pipeline {
             steps {
                 sshagent(['tomcat-credentials']) {
                     sh '''
-                        scp -o StrictHostKeyChecking=no target/my-app-demo.war ec2-user@13.60.253.80:/opt/tomcat/webapps/
-                        ssh ec2-user@13.60.253.80 /opt/tomcat/bin/shutdown.sh
-                        ssh ec2-user@13.60.253.80 /opt/tomcat/bin/startup.sh
+                        scp target/my-app-demo.war ec2-user@$TOMCAT_HOST:/opt/tomcat/webapps/
+                        ssh ec2-user@$TOMCAT_HOST /opt/tomcat/bin/shutdown.sh
+                        ssh ec2-user@$TOMCAT_HOST /opt/tomcat/bin/startup.sh
                     '''
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
         }
     }
 }

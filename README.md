@@ -2,7 +2,7 @@
 
 A practical DevOps repository audit tool that scans Dockerfiles, Kubernetes YAML, Terraform, Jenkins pipelines, shell automation, and Python helper scripts for production-readiness issues.
 
-This repository is no longer a scaffold. It contains a working Python package, CLI entry point, static analysis rules, tests, Docker support, CI workflow, and sample DevOps material.
+This repository contains a working Python package, CLI entry point, static analysis rules, tests, Docker support, CI workflow, and reference DevOps material.
 
 ## What it checks
 
@@ -29,16 +29,6 @@ devops-audit . --format markdown --output reports/audit.md
 docker build -t devops-validation-toolkit .
 docker run --rm -v "$PWD:/repo" devops-validation-toolkit /repo --format text
 ```
-
-## Backdated local commits
-
-For a legitimate reconstructed training history, use:
-
-```bash
-scripts/create_backdated_commits.sh 2026-05-20
-```
-
-This sets `GIT_AUTHOR_DATE` and `GIT_COMMITTER_DATE` for each local commit. Use it only where local-history reconstruction is allowed. Do not use backdating to misrepresent work history.
 
 ## Repository quality signals
 

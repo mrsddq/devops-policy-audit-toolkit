@@ -9,6 +9,8 @@ resource "aws_vpc" "tf-vpc-20250510" {
 }
 
 terraform {
+  required_version = ">= 1.6.0, < 2.0.0"
+
   backend "s3" {
     bucket = "tf-s3-20250510"
     key    = "terraform-my-backup.tfstate"

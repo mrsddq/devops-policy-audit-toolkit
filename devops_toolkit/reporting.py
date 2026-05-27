@@ -60,7 +60,7 @@ def render_markdown(summary: AuditSummary) -> str:
     lines.append("|---|---|---|---:|---|")
     for finding in summary.findings:
         line = "" if finding.line is None else str(finding.line)
-        rec = (finding.recommendation or "").replace("|", "\|")
+        rec = (finding.recommendation or "").replace("|", r"\|")
         lines.append(f"| {finding.rule_id} | {finding.severity.value} | `{finding.path}` | {line} | {rec} |")
     return "\n".join(lines) + "\n"
 

@@ -1,5 +1,13 @@
 pipeline {
     agent any
+
+    options {
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        disableConcurrentBuilds()
+    }
+
     tools {
         maven 'MVN_HOME'
     }
@@ -29,6 +37,12 @@ pipeline {
             steps {
                 sh 'mvn compile'
             }
+        }
+    }
+
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
         }
     }
 }

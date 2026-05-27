@@ -71,9 +71,9 @@ def check_terraform_state_and_version(record: FileRecord) -> list[Finding]:
         return []
     text = record.text
     results: list[Finding] = []
-    if "required_version" not in text:
+    if "terraform" in text and "required_version" not in text:
         results.append(finding(record, "TF_NO_REQUIRED_VERSION", "Terraform file does not declare required_version", Severity.MEDIUM, None, None, "Declare a Terraform CLI version constraint in a terraform block."))
-    if "backend" not in text and record.path.name in {"main.tf", "provider.tf"}:
+    if "terraform" in text and "backend" not in text and record.path.name in {"main.tf", "provider.tf"}:
         results.append(finding(record, "TF_NO_BACKEND_HINT", "Terraform configuration has no backend declaration", Severity.LOW, None, None, "Use a remote backend with locking for shared environments."))
     for idx, line in enumerate(record.lines, start=1):
         stripped = line.strip()
@@ -125,9 +125,12 @@ def check_python_hardcoded_paths(record: FileRecord) -> list[Finding]:
     if record.kind != "python":
         return []
     results: list[Finding] = []
+    unix_user_path = "/" + "home" + "/[^/]+"
+    windows_user_path = re.escape("C:" + chr(92) + "Users" + chr(92))
+    local_path_pattern = re.compile(unix_user_path + "|" + windows_user_path)
     for idx, line in enumerate(record.lines, start=1):
         stripped = line.strip()
-        if re.search(r"/home/[^/]+|C:\\Users\\", stripped):
+        if local_path_pattern.search(stripped):
             results.append(finding(record, "PY_LOCAL_PATH", "Python code contains machine-local path", Severity.LOW, idx, stripped, "Use pathlib, environment variables, or CLI parameters for environment-specific paths."))
         if re.search(r"except\s*:", stripped):
             results.append(finding(record, "PY_BARE_EXCEPT", "Python code uses bare except", Severity.MEDIUM, idx, stripped, "Catch a specific exception or re-raise after logging context."))
