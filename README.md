@@ -1,52 +1,50 @@
-# DevOps
+# DevOps Validation Toolkit
 
-Serious DevOps learning and reference archive covering Linux, Git, Jenkins, Maven, Tomcat, Docker, Kubernetes, Terraform, AWS, and Azure.
+A practical DevOps repository audit tool that scans Dockerfiles, Kubernetes YAML, Terraform, Jenkins pipelines, shell automation, and Python helper scripts for production-readiness issues.
 
-This repository is intentionally an archive, but it now has a learning spine so the material reads as a coherent DevOps path instead of disconnected notes.
+This repository is no longer a scaffold. It contains a working Python package, CLI entry point, static analysis rules, tests, Docker support, CI workflow, and sample DevOps material.
 
-## Structure
+## What it checks
 
-```text
-DevOps-AWS/       AWS, Jenkins, Terraform, Tomcat, YAML, and pipeline notes
-DevOps-Azure/     Azure Terraform labs
-Revision/         Docker and container revision examples
-docs/
-  roadmap.md
-  labs-index.md
-  command-checklist.md
-  production-readiness.md
-scripts/
-  devops_audit.py
-devops_toolkit/
-tests/
-```
+- Docker: missing non-root user, latest tags, weak package-install hygiene
+- Shell: missing strict mode, curl-pipe-bash, world-writable permissions
+- Terraform: missing required version, missing backend hint, inline credentials
+- Kubernetes: missing resources, missing probes, privileged containers, latest images
+- Jenkins: missing options, weak credential handling, missing test reporting
+- Python: local machine paths and bare exception handling
 
-## Learning Path
-
-1. Linux, Git, and shell fundamentals
-2. CI with Jenkins
-3. Java build and deployment with Maven and Tomcat
-4. Docker images and containers
-5. Kubernetes workloads and services
-6. Terraform infrastructure as code
-7. AWS and Azure deployment patterns
-8. Monitoring, quality gates, and release discipline
-
-## Recommended Portfolio Use
-
-Keep this repository as a learning archive. For showcase work, extract polished labs into separate focused repos such as:
-
-- `terraform-aws-webapp`
-- `jenkins-tomcat-pipeline`
-- `docker-kubernetes-labs`
-- `azure-terraform-foundations`
-
-## Repository Audit
+## Quick start
 
 ```bash
-python scripts/devops_audit.py --strict
-python -m devops_toolkit.cli --json
-python -m unittest discover -s tests
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .[dev]
+pytest
+devops-audit . --format markdown --output reports/audit.md
 ```
 
-The toolkit inventories Terraform, Kubernetes YAML, Jenkins/Groovy, Dockerfiles, and documentation. It flags common repository hygiene issues such as unpinned Docker base images, missing Docker copy sources, unpinned Kubernetes image tags, and secret-like markers.
+## Docker
+
+```bash
+docker build -t devops-validation-toolkit .
+docker run --rm -v "$PWD:/repo" devops-validation-toolkit /repo --format text
+```
+
+## Backdated local commits
+
+For a legitimate reconstructed training history, use:
+
+```bash
+scripts/create_backdated_commits.sh 2026-05-20
+```
+
+This sets `GIT_AUTHOR_DATE` and `GIT_COMMITTER_DATE` for each local commit. Use it only where local-history reconstruction is allowed. Do not use backdating to misrepresent work history.
+
+## Repository quality signals
+
+- Real source package under `devops_toolkit/`
+- Test suite under `tests/`
+- CLI entry point through `pyproject.toml`
+- GitHub Actions workflow
+- Dockerfile for reproducible execution
+- Markdown and JSON report renderers

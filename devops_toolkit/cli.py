@@ -1,30 +1,40 @@
-import argparse
-from pathlib import Path
+from __future__ import annotations
 
-from .audit import run_audit
-from .reporting import format_json_report, format_text_report
+import argparse
+import sys
+from pathlib import Path
+from .audit import audit_repository
+from .reporting import render_json, render_markdown, render_text
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Inspect and validate a DevOps repository.")
-    parser.add_argument("--root", default=Path(__file__).resolve().parents[1], help="Repository root to scan.")
-    parser.add_argument("--strict", action="store_true", help="Exit non-zero when warnings are found.")
-    parser.add_argument("--json", action="store_true", help="Print machine-readable JSON output.")
-    parser.add_argument("--include-info", action="store_true", help="Include informational findings in text output.")
+    parser = argparse.ArgumentParser(description="Audit DevOps repositories for production-readiness issues.")
+    parser.add_argument("root", nargs="?", default=".", help="Repository path to scan")
+    parser.add_argument("--format", choices=["text", "json", "markdown"], default="text", help="Report format")
+    parser.add_argument("--fail-on-high", action="store_true", help="Exit with code 2 when high/critical findings exist")
+    parser.add_argument("--output", type=Path, help="Optional file path for the report")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    report = run_audit(args.root)
-
-    if args.json:
-        print(format_json_report(report))
+    summary = audit_repository(args.root)
+    if args.format == "json":
+        output = render_json(summary)
+    elif args.format == "markdown":
+        output = render_markdown(summary)
     else:
-        print(format_text_report(report, include_info=args.include_info))
+        output = render_text(summary)
 
-    has_warnings = any(finding.severity == "warning" for finding in report.findings)
-    return 1 if args.strict and has_warnings else 0
+    if args.output:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(output, encoding="utf-8")
+    else:
+        sys.stdout.write(output)
+
+    if args.fail_on_high and summary.failed:
+        return 2
+    return 0
 
 
 if __name__ == "__main__":

@@ -1,40 +1,101 @@
+from __future__ import annotations
+
 import json
-from dataclasses import asdict
-
-from .models import AuditReport
+from .models import AuditSummary, Finding
 
 
-def format_text_report(report: AuditReport, include_info: bool = False) -> str:
-    lines = report.summary_lines()
-    visible_findings = [
-        finding for finding in report.findings if include_info or finding.severity != "info"
-    ]
+def finding_to_dict(finding: Finding) -> dict[str, object]:
+    return {
+        "rule_id": finding.rule_id,
+        "title": finding.title,
+        "severity": finding.severity.value,
+        "path": finding.path,
+        "line": finding.line,
+        "evidence": finding.evidence,
+        "recommendation": finding.recommendation,
+        "metadata": finding.metadata,
+    }
 
-    if visible_findings:
-        lines.append("Findings:")
-        lines.extend(finding.format(report.root) for finding in visible_findings)
-    else:
-        lines.append("Audit passed with no warnings.")
-    return "\n".join(lines)
 
-
-def format_json_report(report: AuditReport) -> str:
+def render_json(summary: AuditSummary) -> str:
     payload = {
         "summary": {
-            "terraform_files": len(report.inventory.terraform_files),
-            "yaml_files": len(report.inventory.yaml_files),
-            "groovy_files": len(report.inventory.groovy_files),
-            "markdown_files": len(report.inventory.markdown_files),
-            "dockerfiles": len(report.inventory.dockerfiles),
-            "total_files": report.inventory.total_files,
+            "root": summary.root,
+            "scanned_files": summary.scanned_files,
+            "risk_score": summary.risk_score,
+            "failed": summary.failed,
+            "by_severity": summary.by_severity,
         },
-        "findings": [
-            {
-                **asdict(finding),
-                "path": str(finding.path.relative_to(report.root)),
-            }
-            for finding in report.findings
-        ],
+        "root": summary.root,
+        "scanned_files": summary.scanned_files,
+        "risk_score": summary.risk_score,
+        "failed": summary.failed,
+        "by_severity": summary.by_severity,
+        "findings": [finding_to_dict(f) for f in summary.findings],
     }
-    return json.dumps(payload, indent=2)
+    return json.dumps(payload, indent=2, sort_keys=True)
 
+
+def render_markdown(summary: AuditSummary) -> str:
+    lines = [
+        "# DevOps Repository Audit Report",
+        "",
+        f"Root: `{summary.root}`",
+        f"Scanned files: **{summary.scanned_files}**",
+        f"Risk score: **{summary.risk_score}**",
+        f"Gate failed: **{str(summary.failed).lower()}**",
+        "",
+        "## Severity Counts",
+        "",
+        "| Severity | Count |",
+        "|---|---:|",
+    ]
+    for severity, count in summary.by_severity.items():
+        lines.append(f"| {severity} | {count} |")
+    lines.extend(["", "## Findings", ""])
+    if not summary.findings:
+        lines.append("No findings detected.")
+        return "\n".join(lines) + "\n"
+    lines.append("| Rule | Severity | File | Line | Recommendation |")
+    lines.append("|---|---|---|---:|---|")
+    for finding in summary.findings:
+        line = "" if finding.line is None else str(finding.line)
+        rec = (finding.recommendation or "").replace("|", "\|")
+        lines.append(f"| {finding.rule_id} | {finding.severity.value} | `{finding.path}` | {line} | {rec} |")
+    return "\n".join(lines) + "\n"
+
+
+def render_text(summary: AuditSummary) -> str:
+    lines = [
+        "DevOps repository audit",
+        f"Root: {summary.root}",
+        f"Scanned files: {summary.scanned_files}",
+        f"Risk score: {summary.risk_score}",
+        f"Failed: {summary.failed}",
+        "",
+    ]
+    for finding in summary.findings:
+        location = finding.path if finding.line is None else f"{finding.path}:{finding.line}"
+        lines.append(f"[{finding.severity.value.upper()}] {finding.rule_id} {location} - {finding.title}")
+        if finding.recommendation:
+            lines.append(f"  fix: {finding.recommendation}")
+    return "\n".join(lines) + "\n"
+
+
+def format_json_report(summary: AuditSummary) -> str:
+    return render_json(summary)
+
+
+def format_text_report(summary: AuditSummary) -> str:
+    if summary.inventory is None:
+        return render_text(summary)
+    inv = summary.inventory
+    prefix = "\n".join([
+        "Repository summary",
+        f"Terraform files: {len(inv.terraform_files)}",
+        f"YAML files: {len(inv.yaml_files)}",
+        f"Groovy files: {len(inv.groovy_files)}",
+        f"Dockerfiles: {len(inv.dockerfiles)}",
+        "",
+    ])
+    return prefix + render_text(summary)
