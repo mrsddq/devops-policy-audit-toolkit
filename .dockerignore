@@ -6,5 +6,6 @@
 .vscode/
 *.log
 *.tmp
+*.docx
 __pycache__/
-*.py[cod]
+.pytest_cache/

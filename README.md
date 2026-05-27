@@ -15,6 +15,9 @@ docs/
   labs-index.md
   command-checklist.md
   production-readiness.md
+scripts/
+  devops_audit.py
+tests/
 ```
 
 ## Learning Path
@@ -36,3 +39,12 @@ Keep this repository as a learning archive. For showcase work, extract polished 
 - `jenkins-tomcat-pipeline`
 - `docker-kubernetes-labs`
 - `azure-terraform-foundations`
+
+## Repository Audit
+
+```bash
+python scripts/devops_audit.py --strict
+python -m unittest discover -s tests
+```
+
+The audit checks that core DevOps artifacts are present and flags common repository hygiene issues such as unpinned Docker base images, missing Docker copy sources, and secret-like markers.

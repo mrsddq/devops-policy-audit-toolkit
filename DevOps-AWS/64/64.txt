@@ -12,18 +12,18 @@ Window and Linux server connection
     update_password: on_create
   loop:
   - name: Test User
-    password: Password
+    password: <example-password>
   - name: Admin User
-    password: SuperSecretPass01
+    password: <example-password>
   - name: Dev User
-    password: '@fvr3IbFBujSRh!3hBg%wgFucD8^x8W5'
+    password: <example-password>
 
 [win-server]
 ec2-13-201-229-129.ap-south-1.compute.amazonaws.com
 
 [win-server:vars]
 anisble_user=Administrator
-anisble_password="6=ik;(mOZOZ)CNnZF2ilpisk%=qr8ZZ*"
+anisble_password="<example-password>"
 ansible_port=5986
 ansible_connection=winrm
 ansible_winrm_scheme=https
@@ -37,7 +37,7 @@ winrm enumerate winrm/config/Listener
 $url = "https://raw.githubusercontent.com/jborean93/ansible-windows/master/scripts/Upgrade-PowerShell.ps1"
 $file = "$env:temp\Upgrade-PowerShell.ps1"
 $username = "Administrator"
-$password = "6=ik;(mOZOZ)CNnZF2ilpisk%=qr8ZZ*"
+$password = "<example-password>"
 
 (New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force
