@@ -1,9 +1,0 @@
-Go to => sudo nano ansible.cfg
-#become=True
-#become_ask_pass=True
-host_key_checking = False
-sudo nano first-playbook.yaml
-
-ansible-playbook -i /etc/ansible/hosts variable.yaml --syntax-check
-ansible-playbook -i /etc/ansible/hosts variable.yaml --check
-ansible-playbook variable.yaml
