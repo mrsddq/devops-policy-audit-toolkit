@@ -6,5 +6,6 @@
 .vscode/
 *.log
 *.tmp
+reports/
 __pycache__/
 *.py[cod]

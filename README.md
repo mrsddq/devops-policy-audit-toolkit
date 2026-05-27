@@ -19,8 +19,17 @@ This repository contains a working Python package, CLI entry point, static analy
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
-pytest
-devops-audit . --format markdown --output reports/audit.md
+python -m unittest discover -s tests
+devops-audit . --config devops-audit.config.json --format markdown --output reports/audit.md --fail-on-high
+```
+
+Or use the project automation:
+
+```bash
+make install
+make test
+make audit
+make reports
 ```
 
 ## Docker
@@ -38,3 +47,16 @@ docker run --rm -v "$PWD:/repo" devops-validation-toolkit /repo --format text
 - GitHub Actions workflow
 - Dockerfile for reproducible execution
 - Markdown and JSON report renderers
+- SARIF report output for CI/code-scanning ingestion
+- Versioned finding baselines for incremental adoption
+- JSON/YAML policy configuration with severity gates and documented overrides
+
+## Policy and Baselines
+
+```bash
+devops-audit . --config devops-audit.config.json --format sarif --output reports/audit.sarif
+devops-audit . --write-baseline reports/baseline.json
+devops-audit . --baseline reports/baseline.json --fail-on-high
+```
+
+The policy file controls severity gates, ignored paths, and documented rule overrides. Baselines are versioned JSON files that let an existing repository fail only on new findings while older exceptions are being remediated.

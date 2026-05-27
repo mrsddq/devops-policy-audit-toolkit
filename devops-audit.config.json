@@ -1,0 +1,14 @@
+{
+  "default_format": "text",
+  "report_directory": "reports",
+  "policy": {
+    "fail_on": ["high", "critical"],
+    "ignored_paths": [
+      ".git/*",
+      ".terraform/*",
+      "__pycache__/*",
+      "reports/*"
+    ],
+    "overrides": []
+  }
+}

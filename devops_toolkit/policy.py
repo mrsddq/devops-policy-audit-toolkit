@@ -52,18 +52,8 @@ def load_policy(path: str | Path | None) -> AuditPolicy:
     policy_path = Path(path)
     if not policy_path.exists():
         raise FileNotFoundError(f"Policy file not found: {policy_path}")
+    from .config import policy_from_mapping
+
     import json
 
-    raw = json.loads(policy_path.read_text(encoding="utf-8"))
-    fail_on = tuple(coerce_severity(value) for value in raw.get("fail_on", ["high", "critical"]))
-    ignored_paths = tuple(str(value) for value in raw.get("ignored_paths", []))
-    overrides = tuple(
-        PolicyOverride(
-            rule_id=str(item["rule_id"]),
-            path_pattern=str(item["path_pattern"]),
-            reason=str(item.get("reason", "documented exception")),
-            expires=item.get("expires"),
-        )
-        for item in raw.get("overrides", [])
-    )
-    return AuditPolicy(fail_on=fail_on, ignored_paths=ignored_paths, overrides=overrides)
+    return policy_from_mapping(json.loads(policy_path.read_text(encoding="utf-8")))
