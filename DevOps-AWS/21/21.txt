@@ -1,0 +1,27 @@
+Become root user,
+
+yum install docker -y
+
+CKAD – Certified Kubernetes Administrator and Developer – Developer – [loan processing application] – docker images – deploy – load balancing – auto-scaling – helm – istio – argo CD
+
+CKA – Certified Kubernetes Administrator – Infra [EC2+SG+VPC==deployment, secret,ingerss] – env creation for RBAC (resource based access control) and PV persistent volume and PVC persistent volume claim
+
+docker –version
+
+service docker status
+
+service docker start
+
+service docker status
+
+docker images
+
+systemctl enable docker
+
+Match Stick ==> ignite/lit ==> fire
+
+(stagnant / not burning version) burn ==> fire ==> match box (match sticks)
+
+Images (stagnant / non running file system) == run ==>container ==> docker hub / registry (images)
+
+running image ==> container

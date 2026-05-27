@@ -1,0 +1,11 @@
+terraform apply
+
+yes
+
+terraform state list
+
+terraform state show azurerm_resource_group.basics
+
+jq . < terraform.tfstate
+
+You should never modify the terraform.tfstate file directly. You can irrevocably corrupt the state file.

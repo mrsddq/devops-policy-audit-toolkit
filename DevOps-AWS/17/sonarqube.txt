@@ -1,0 +1,25 @@
+sonarqube-server
+================
+sudo yum update -y
+
+sudo yum install java-1.8* -y
+
+cd /opt
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-6.7.7.zip
+sudo unzip sonarqube-6.7.7.zip
+sudo mv sonarqube-6.7.7 sonar
+sudo rm -rf sonarqube-6.7.7.zip
+
+sudo chown -R ec2-user:ec2-user sonar
+cd sonar/bin/linux-x86-64
+./sonar.sh start
+./sonar.sh status
+
+ip:9000
+
+acd454b2573d748fff26668a5e496dc2f25726fe
+
+mvn sonar:sonar \
+  -Dsonar.host.url=http://13.50.111.219:9000 \
+  -Dsonar.login=acd454b2573d748fff26668a5e496dc2f25726fe
+

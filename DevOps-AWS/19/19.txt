@@ -1,0 +1,5 @@
+converted ppk to pem using putty
+
+installed plugin on jenkins
+    ssh agent
+

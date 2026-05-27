@@ -1,0 +1,21 @@
+ansible-doc -l | wc -l //[3387]-l is list and -wc is word count
+ansible-doc copy //press q to come out
+ansible all -m ping //check connectivity between master and worker nodes
+ansible server-2 -m setup //collect ansible facts of worker nodes
+ansible server-2 -m file -a "dest=/home/ansadmin/test-file state=directory" //create new directory on worker machine
+ansible server-2 -m file -a "dest=/home/ansadmin/test-file state=absent" //delete the directory from worker machine
+ansible server-2 -m shell -a "uptime"
+ansible server-2 -m shell -a "df -h"
+ansible server-2 -m shell -a "mkdir server-2"
+ansible server-2 -m shell -a "rmdir server-2"
+ansible server-2 -m copy -a "src=/etc/ansible/sample.txt dest=/home/ansadmin" //copy file from source to destination(remote server)
+ansible server-2 -m yum -a "name=httpd state=present" -b //install a software (httpd) on remote machine
+ansible server-2 -m service -a "name=httpd state=started" -b //start the service on worker node
+ansible server-2 -m user -a "name=vikas" -b //create a new user
+ansible server-2 -m user -a "name=vikas state=absent" -b //delete the user
+ansible server-2 -a "/sbin/reboot" -b  //reboot command
+
+sudo nano ansible.cfg
+[privilege_escalation]
+become=True
+become_ask_pass=True

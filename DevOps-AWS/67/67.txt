@@ -1,0 +1,23 @@
+ansible-playbook install-httpd.yml -b 
+
+ansible-vault encrypt install-httpd.yaml
+
+Provide vault password
+
+sudo !!
+
+cat install-httpd.yaml
+sudo chmod 755 install-httpd.yaml
+
+cat install-httpd.yaml
+
+ansible-vault view install-httpd.yaml
+
+ansible-vault edit install-httpd.yaml 
+
+ansible-playbook install-httpd.yaml --ask-vault-pass -b
+
+sudo ansible-vault decrypt --ask-vault-pass install-httpd.yaml
+
+sudo chmod 755 install-httpd.yaml
+

@@ -1,0 +1,151 @@
+introduction to DevOps
+======================
+
+software development life cycle (SDLC):
+  ideation: brainstrom ideas that solve a particular problem faced by target users
+  requirement: interacting with stakeholders and users to collect and document project requirements
+  design: creating the architecture of a software system and its elements
+  development: building the software using a programming language by the development team
+  testing: evaluating the quality of software with the aim of finding and fixing defects
+  deployment: preparing the software to run and operate in a specific environment
+  maintainance: updating and supporting the software after it  has been delivered to the market.
+
+project execution methodologies
+===============================
+
+waterfall: design => code => test => deploy
+agile: design => code => test => code => test => code => test => deploy
+devops: design => code => test => code => test => code => test => deploy => code => test => code => test => code => test => deploy => code => test => code => test => code => test => deploy
+
+
+          architecture---packaging---infrastructure
+waterfall: monolithic---physical server---in-house datacentre
+agile: n-tier decoupled---VM---hosted
+devops: micro-services-containers-cloud
+
+devops: what devops is not?
+===========================
+most common misundrstanding
+
+  devops is not a role, person or organization
+  devops is not a seperate team
+  devops is not a product or a tool
+  devops is not about just writing scripts or implementing tools
+
+what is devops?
+===============
+devosp is not a goal, but a never ending process of continual improvement.
+
+devops is about automation
+it is about implementing agility in information
+it is about implementing best practices with help of tools
+devops is a culture
+devops is not a technology, tool or framework.
+devops is a cultural movement, mindset, philosophy to coordinate produce better, more reliable products by automating infrastructure, workflow, and continuously measuring application performance for which they use a lot of tools.
+
+dev
+===
+application performance
+  decrease latency by using apm tools
+end user analytics
+  monitor end user latency and check device performance
+quality code
+  ensure deployment don't degrade performance
+code-level errors
+  low mttr by finding error root cause
+ops
+===
+application availability
+  make sure uptime and SLAs are in order
+application performance
+  solve problems by correlating infrastructure and application metrics
+end user complaints
+  fix problems before end users complain
+performance analysis
+  use automatically generated baselines to focus troubleshooting
+
+devops benefits
+===============
+  reliabiltiy
+  reduced time to recover
+  efficiency
+  lower risk
+  shorter dev cycle
+  stability
+  faster updates
+  better user experience
+  fewer failures
+  higher quality
+  faster product delivery
+  cost savings
+
+level
+  beginner
+    basics linux for debugging triaging 
+    basic scripting knowledge
+    release management
+  practitioner
+    continuous developemt
+    continuous integration
+    continuous delivery
+    continuous testing
+  proficient
+    continuous deployment
+    configuration management
+    infrastructure as a code
+  champ
+    deployment orchestration
+    cloud management
+    continuous monitoring
+  good to have
+    python scripting
+    collaboration skills
+  
+aws
+===
+  flexible services
+  built for scale
+  automation
+  secure
+  large partmer ecosystem
+
+cloud computing
+===============
+delivery of on-demand computing services over the internet on pay asyou go basics.
+  storing data/application on remote servers.
+  processing data/application from servers.
+  accessing data/application via internet.
+
+features of cloud computing
+===========================
+  1. great availability of resources
+  2. on-demand self-services
+  3. easy maintenance
+  4. large network access
+  5. availability
+  6. automtic system
+  7. economical
+  8. security
+  9. pay-as-you-go
+
+the deployment models of the cloud
+==================================
+private cloud:
+  cloud services used by a single organization, not exposed to the public
+  complete control
+  security for sensitive application
+  meet specific business needs
+
+public cloud:
+  cloud resources owned and operated by a third-party cloud service provider delivered over the internet
+
+hybrid server:
+  keep some servers on premises and extend some capabilites to the cloud
+  control over sensitive assets in your private infrastructure
+  flexibility and cost-effectiveness of the public cloud
+
+what is aws?
+============
+amazon web services(aws) is a secure cloud services platform, offering compute power, database storage, content delivery and other functionality to help businesses scale and grow
+  
+

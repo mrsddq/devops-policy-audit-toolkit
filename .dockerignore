@@ -1,0 +1,11 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+.env
+.idea/
+.vscode/
+*.log
+*.tmp
+*.docx
+__pycache__/
+.pytest_cache/

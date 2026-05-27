@@ -1,0 +1,28 @@
+jenkins-server
+https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/#downloading-and-installing-jenkins
+
+linux AMI 2
+
+yum install java* -y
+
+java --version
+find / -name java-11*
+
+/usr/lib/jvm/java-17-amazon-corretto.x86_64
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+sudo yum upgrade
+# Add required dependencies for the jenkins package
+sudo yum install fontconfig java-21-openjdk
+sudo yum install jenkins
+sudo systemctl daemon-reload
+
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+
+cat /var/lib/jenkins/secrets/initialAdminPassword
+
+

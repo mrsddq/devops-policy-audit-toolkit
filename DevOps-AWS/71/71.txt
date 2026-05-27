@@ -1,0 +1,12 @@
+mkdir terraform-project
+cd terraform-project
+terraform init
+ls -la
+nano main.tf
+
+<=
+
+terraform init
+terraform validate
+terraform plan -out ready.txt
+

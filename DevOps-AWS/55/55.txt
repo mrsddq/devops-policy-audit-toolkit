@@ -1,0 +1,6 @@
+sudo nano first-playbook.yaml // create a yaml file
+ansible-playbook first-playbook.yaml --syntax-check //yaml syntax checker
+ansible-playbook first-playbook.yaml // run yaml file
+ansible -m yum -a "name=git state=present" server-2
+ansible -m yum -a "name=git state=present" server-2 -b
+

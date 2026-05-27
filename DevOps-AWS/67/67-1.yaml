@@ -1,0 +1,13 @@
+---
+- name: Server Details
+  hosts: test-server
+  remote_user: ansadmin
+  vars_files:
+    - secrets.yaml
+
+  tasks:
+  - name: Remove httpd
+    yum: pkg=httpd state=absent
+
+  - name: Install httpd
+    yum: pkg=httpd state=present

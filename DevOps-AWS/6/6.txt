@@ -1,0 +1,79 @@
+Prerequisite: Create a GitHub account.
+
+git –version
+
+git – local repository
+
+Git is a software tool
+It is installed on the local system
+It is used to manage different versions of code
+It provide a command line to interact with code
+github – central repository
+
+Github is a service
+It is hosted in the web
+It is used to have a copy of the local repository code
+It provides graphical interface to store the files
+git vs github
+
+Type of SVN – Central Version Control system
+
+Type of Git – DVSC – Distributed Version Control System
+
+yum install git -y
+
+sudo su –
+
+hostname git-instance
+
+sudo su –
+
+git clone https://github.com/laraibclub/AWS-DevOps.git
+
+ls
+
+cd AWS-DevOps
+
+mkdir GitLearning
+
+git init
+
+cd GitLearning
+
+git init
+
+nano sample.sh
+
+#!/bin/bash
+
+echo "today date is" $date
+crtl+x
+
+y
+
+ls
+
+ls -l
+
+git status
+
+git add sample.sh
+
+git commit -m “First Commit”
+
+git config –global user.email “laraibsclub@gmail.com”
+
+git config –global user.name “laraibclub”
+
+git config –list
+
+git commit -m “First Commit”
+
+git branch
+
+git branch -M main
+
+git remote add origin https://github.com/laraibclub/AWS-DevOps.git
+
+git remote -v
+

@@ -1,0 +1,12 @@
+echo "I am in first job"
+echo "I am in second job"
+
+jenkins:
+  build pipeline plugin
+  stage view
+
+jenkins pipeline types:
+  declarative
+  scripted
+
+they both use groovy scripting

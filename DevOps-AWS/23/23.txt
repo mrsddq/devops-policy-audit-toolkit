@@ -1,0 +1,49 @@
+docker pull nginx:latest // pull nginx image
+
+docker images ls -la
+
+df -h // memory status
+
+docker pull nginx:1.17
+
+docker pull nginx:1.22
+
+docker images ls
+
+Docker Images → Docker Container // running images becomes container
+
+Docker Images
+
+Read Only Template Used To Create Container
+Built By Docker Users
+Stored in docker Hub or Your Local Repo
+Docker Container
+
+Isolated Application Platform
+Contains Everthing Needed to Run the Application
+Built from one or more Images
+docker pull ubuntu:latest
+
+docker run -d –name custom-nginx-container nginx:latest // running the pulled image
+
+docker container ls
+
+docker run -d nginx:latest // given random name
+
+docker run -d –name custom-nginx-container1 nginx:latest
+
+docker run -d –name custom-nginx-container2 nginx:latest
+
+docker ps -a // basic information about uptime, our container ID, and the ports its using.
+
+docker inspect d781add97f87 // all the internal details are shown for the container.
+
+docker run –name nginx-exposed -d -p 9001:80 nginx:latest // docker -d id detached mode, docker -p is port forwarding 9001 is internal port and 80 is external port.
+
+1 image ==> 1 docker container
+
+Compose
+
+multiple images ==> 1 docker container
+
+port binding and port forwarding should be unique

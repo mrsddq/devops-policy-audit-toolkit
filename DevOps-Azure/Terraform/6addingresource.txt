@@ -1,0 +1,74 @@
+https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
+
+provider.tf
+===
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~>3.1"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+
+  storage_use_azuread = true
+}
+===
+
+variables.tf
+===
+variable "resource_group_name" {
+  description = "Name for the resource group"
+  type        = string
+  default     = "terraform-basics"
+}
+
+variable "location" {
+  description = "Azure region"
+  type        = string
+  default     = "West Europe"
+}
+
+variable "container_group_name" {
+  description = "Name of the container group"
+  type        = string
+  default     = "terraform-basics"
+}
+
+variable "prefix" {
+  description = "Prefix string to ensure FQDNs are globally unique"
+  type        = string
+}
+===
+
+main.tf
+===
+resource "azurerm_resource_group" "basics" {
+  name     = var.resource_group_name
+  location = var.location
+}
+
+resource "azurerm_container_group" "example" {
+  name                = var.container_group_name
+  location            = azurerm_resource_group.basics.location
+  resource_group_name = azurerm_resource_group.basics.name
+  ip_address_type     = "Public"
+  dns_name_label      = "${var.prefix}-${var.container_group_name}"
+  os_type             = "Linux"
+
+  container {
+    name   = "inspectorgadget"
+    image  = "jelledruyts/inspectorgadget:latest"
+    cpu    = "0.5"
+    memory = "1.0"
+
+    ports {
+      port     = 80
+      protocol = "TCP"
+    }
+  }
+}
+===

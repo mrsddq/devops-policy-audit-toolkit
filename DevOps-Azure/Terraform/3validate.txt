@@ -1,0 +1,10 @@
+terraform validate
+
+in case of error rectify error
+
+Challenge: Update the configuration to match the requirements below.
+    Create a new variable named location
+    Default the value to West Europe
+    Add a description for the variable: Azure region
+    Update the resource group to use the location variable
+    Format and validate your files

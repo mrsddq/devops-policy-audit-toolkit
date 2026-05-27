@@ -1,0 +1,16 @@
+docker pull image jenkins/jenkins
+docker image ls
+docker container run --name jenkins1 -p 8080:8080 jenkins/jenkins
+docker container ps -a
+docker container start jenkins1
+
+eff2312fc6e440c88954538f4586d513
+
+docker container run --name apache -p 8080:81 httpd
+
+first stop container
+delete container
+delete image
+
+
+

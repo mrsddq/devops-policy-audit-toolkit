@@ -1,0 +1,20 @@
+terraform-backend-implemented-with-aws-s3-and-dynamodb
+======================================================
+
+mkdir vpc-demo
+cd vpc-demo
+terraform init
+
+CIDR.xyz
+
+nano main.tf
+nano provider.tf
+
+terraform init
+terraform validate
+terraform apply --auto-approve
+
+rm -rf terraform.tfstate
+terraform apply --auto-approve
+terraform destroy --auto-approve
+

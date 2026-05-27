@@ -1,0 +1,7 @@
+touch terraform.tfvars
+===
+location = "UK South"
+===
+
+terraform plan
+

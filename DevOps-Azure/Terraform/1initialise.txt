@@ -1,0 +1,36 @@
+https://shell.azure.com/
+
+mkdir terraform-basics
+
+cd terraform-basics
+
+code provider.tf
+
+===
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~>3.1"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+
+  storage_use_azuread = true
+}
+===
+
+ctrl+s and ctrl+q
+
+terraform version
+
+terraform init
+
+find .terraform* -type f
+
+terraform providers
+
+terraform version

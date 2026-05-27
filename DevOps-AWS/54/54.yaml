@@ -1,0 +1,88 @@
+1. Switching user & editing your inventory
+
+
+su ansadmin                      # switch to your Ansible-admin user
+cd /etc/ansible                  # go to Ansible’s config directory
+sudo nano hosts                  # open your inventory file
+Your inventory entries should look like:
+
+ini
+
+[server-2]
+10.0.0.42      # or whatever its hostname/IP is
+Note: the group header [server-2] must be on its own line, no trailing text.
+
+2. Running simple ad-hoc commands
+Syntax reminder:
+
+php-template
+
+ansible <target-pattern> -m <module> -a "<module-args>" [flags]
+Check uptime
+
+
+
+ansible server-2 -m shell -a "uptime"
+Gather all facts
+
+
+
+ansible server-2 -m setup
+Create a directory (idempotent!)
+
+
+
+ansible server-2 -m file -a "dest=/home/ansadmin/test-file state=directory"
+Remove it
+
+
+
+ansible server-2 -m file -a "dest=/home/ansadmin/test-file state=absent"
+Touch a file
+
+
+
+ansible server-2 -m file -a "dest=/home/ansadmin/test-file/sample.txt state=touch"
+Whenever you need to elevate to root for package installs or service control, add -b (become):
+
+
+
+ansible server-2 -m yum     -a "name=httpd state=present"    -b
+ansible server-2 -m service -a "name=httpd state=started"    -b
+ansible server-2 -m service -a "name=httpd state=restarted"  -b
+ansible server-2 -m command -a "service httpd status"        -b
+Increase verbosity to debug: add -v, -vvv, etc.
+
+3. “IQ” questions answered
+Q: What is an Ansible fact?
+⟳ Facts are the variables Ansible automatically gathers about each managed node (OS, IPs, memory, CPUs, disks, etc.). They let you write plays that tailor themselves to a host’s actual configuration. (You cannot delete servers with facts—that’s outside their scope.)
+
+Q: What does “idempotent behavior” mean in Ansible?
+⟳ A module is idempotent if running it once makes the desired change, and running it again leaves that state unchanged. For example, creating a directory with state=directory will only create it if missing; subsequent runs do nothing.
+
+4. Providing an SSH password
+When you need to supply an SSH password instead of using keys, use the -k (or --ask-pass) flag on ad-hoc commands:
+
+
+
+ansible server-2 -m yum -a "name=httpd state=present" -b -k
+You’ll be prompted for the SSH login password.
+For playbooks, similarly:
+
+
+
+ansible-playbook site.yml --ask-pass
+If you need to automate non-interactive password entry (not recommended for security reasons), you can install sshpass and then:
+
+
+
+ANSIBLE_SSH_PASS='YourPassword' ansible server-2 -m shell -a "uptime" -b
+—but generally, setting up SSH key authentication is far more secure and hassle-free.
+
+Key takeaways:
+
+Use -k/--ask-pass to prompt for SSH password.
+
+Facts = gathered host data; idempotence = safe to rerun.
+
+Always group your inventory correctly and use -b to become root when needed.

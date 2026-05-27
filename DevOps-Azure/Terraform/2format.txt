@@ -1,0 +1,26 @@
+cd /terraform-basics
+
+touch variables.tf main.tf
+
+code .
+
+main.tf
+=====
+resource azurerm_resource_group basics {
+name = var.name
+location="West Europe"
+}
+=====
+
+terraform fmt
+
+variables.tf
+=====
+variable "resource_group_name" {
+  description = "Name for the resource group"
+  type        = "string"
+  default     = "terraform-basics"
+}
+=====
+
+terraform fmt
