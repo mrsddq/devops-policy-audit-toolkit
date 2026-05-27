@@ -17,6 +17,7 @@ docs/
   production-readiness.md
 scripts/
   devops_audit.py
+devops_toolkit/
 tests/
 ```
 
@@ -44,7 +45,8 @@ Keep this repository as a learning archive. For showcase work, extract polished 
 
 ```bash
 python scripts/devops_audit.py --strict
+python -m devops_toolkit.cli --json
 python -m unittest discover -s tests
 ```
 
-The audit checks that core DevOps artifacts are present and flags common repository hygiene issues such as unpinned Docker base images, missing Docker copy sources, and secret-like markers.
+The toolkit inventories Terraform, Kubernetes YAML, Jenkins/Groovy, Dockerfiles, and documentation. It flags common repository hygiene issues such as unpinned Docker base images, missing Docker copy sources, unpinned Kubernetes image tags, and secret-like markers.

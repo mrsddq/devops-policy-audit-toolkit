@@ -4,4 +4,4 @@ WORKDIR /app
 
 COPY . .
 
-CMD ["python", "scripts/devops_audit.py", "--strict"]
+CMD ["python", "-m", "devops_toolkit.cli", "--strict"]
