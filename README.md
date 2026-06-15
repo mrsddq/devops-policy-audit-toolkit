@@ -1,5 +1,7 @@
 # DevOps Validation Toolkit
 
+[![CI](https://github.com/mrsddq/infra-policy-lab-private-source/actions/workflows/ci.yml/badge.svg)](https://github.com/mrsddq/infra-policy-lab-private-source/actions/workflows/ci.yml)
+
 A practical DevOps repository audit tool that scans Dockerfiles, Kubernetes YAML, Terraform, Jenkins pipelines, shell automation, and Python helper scripts for production-readiness issues.
 
 This repository contains a working Python package, CLI entry point, static analysis rules, tests, Docker support, CI workflow, and reference DevOps material.
@@ -50,6 +52,7 @@ docker run --rm -v "$PWD:/repo" devops-validation-toolkit /repo --format text
 - SARIF report output for CI/code-scanning ingestion
 - Versioned finding baselines for incremental adoption
 - JSON/YAML policy configuration with severity gates and documented overrides
+- Release checklist in `docs/RELEASE_CHECKLIST.md`
 
 ## Policy and Baselines
 
