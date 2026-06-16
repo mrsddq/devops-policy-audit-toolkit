@@ -8,6 +8,11 @@ from .rules import RULES
 
 def audit_repository(root: str | Path) -> AuditSummary:
     base = Path(root).resolve()
+    if not base.exists():
+        raise FileNotFoundError(f"scan root does not exist: {base}")
+    if not base.is_dir():
+        raise NotADirectoryError(f"scan root is not a directory: {base}")
+
     records = build_inventory(base)
     findings: list[Finding] = []
     for record in records:

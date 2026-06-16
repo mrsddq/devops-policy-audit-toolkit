@@ -61,7 +61,7 @@ def render_sarif(summary: AuditSummary) -> str:
                 "tool": {
                     "driver": {
                         "name": DRIVER_NAME,
-                        "informationUri": "https://github.com/mrsddq/infra-policy-lab-private-source",
+                        "informationUri": "https://github.com/mrsddq/devops-policy-audit-toolkit",
                         "rules": [rules[key] for key in sorted(rules)],
                     }
                 },

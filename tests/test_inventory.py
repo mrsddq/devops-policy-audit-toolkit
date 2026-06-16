@@ -15,3 +15,15 @@ def test_inventory_reads_text_files(tmp_path):
     records = build_inventory(tmp_path)
     assert len(records) == 1
     assert records[0].kind == "dockerfile"
+
+
+def test_inventory_ignores_vendor_directories(tmp_path):
+    vendor = tmp_path / "node_modules" / "package"
+    vendor.mkdir(parents=True)
+    (vendor / "Dockerfile").write_text("FROM busybox:latest\n", encoding="utf-8")
+    (tmp_path / "Dockerfile").write_text("FROM python:3.12\n", encoding="utf-8")
+
+    records = build_inventory(tmp_path)
+
+    assert len(records) == 1
+    assert records[0].relative_path == "Dockerfile"

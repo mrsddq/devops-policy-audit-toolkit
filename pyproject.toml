@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "devops-validation-toolkit"
+name = "devops-policy-audit-toolkit"
 version = "0.3.0"
 description = "Static DevOps repository auditor for Docker, Kubernetes, Terraform, Jenkins and shell automation."
 requires-python = ">=3.10"
@@ -15,6 +15,10 @@ dev = ["pytest>=8.0", "ruff>=0.5"]
 
 [project.scripts]
 devops-audit = "devops_toolkit.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["devops_toolkit*"]
+exclude = ["Revision*", "DevOps-AWS*", "DevOps-Azure*", "tests*"]
 
 [tool.pytest.ini_options]
 addopts = "-q"

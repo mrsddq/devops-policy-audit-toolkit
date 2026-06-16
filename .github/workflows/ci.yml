@@ -15,6 +15,7 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip
       - run: pip install -e .[dev]
+      - run: python -m compileall devops_toolkit tests
       - run: pytest
       - run: mkdir -p reports
       - run: devops-audit . --config devops-audit.config.json --format markdown --output reports/audit-report.md --fail-on-high

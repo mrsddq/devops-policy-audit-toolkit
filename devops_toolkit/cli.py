@@ -25,7 +25,11 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     config = load_config(args.config)
-    summary = audit_repository(args.root)
+    try:
+        summary = audit_repository(args.root)
+    except (FileNotFoundError, NotADirectoryError) as exc:
+        sys.stderr.write(f"{exc}\n")
+        return 2
     summary.findings = config.policy.filter_findings(summary.findings)
     if args.write_baseline:
         write_baseline(args.write_baseline, summary.findings)

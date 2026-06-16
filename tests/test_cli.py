@@ -1,6 +1,7 @@
 import json
 import unittest
 from contextlib import redirect_stdout
+from contextlib import redirect_stderr
 from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -55,6 +56,17 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(exit_code, 0)
         self.assertEqual(payload["findings"], [])
+
+    def test_cli_rejects_missing_scan_root(self):
+        with TemporaryDirectory() as directory:
+            missing = Path(directory) / "missing"
+
+            stderr = StringIO()
+            with redirect_stderr(stderr):
+                exit_code = main([str(missing)])
+
+        self.assertEqual(exit_code, 2)
+        self.assertIn("scan root does not exist", stderr.getvalue())
 
 
 if __name__ == "__main__":
