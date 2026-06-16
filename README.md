@@ -1,6 +1,6 @@
 # DevOps Validation Toolkit
 
-[![CI](https://github.com/mrsddq/infra-policy-lab-private-source/actions/workflows/ci.yml/badge.svg)](https://github.com/mrsddq/infra-policy-lab-private-source/actions/workflows/ci.yml)
+[![CI](https://github.com/mrsddq/devops-policy-audit-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/mrsddq/devops-policy-audit-toolkit/actions/workflows/ci.yml)
 
 A practical DevOps repository audit tool that scans Dockerfiles, Kubernetes YAML, Terraform, Jenkins pipelines, shell automation, and Python helper scripts for production-readiness issues.
 
