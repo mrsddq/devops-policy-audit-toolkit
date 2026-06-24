@@ -8,6 +8,7 @@ on:
       - .dockerignore
       - pyproject.toml
       - devops_toolkit/**
+      - Revision/UseADockerfile ToBuildACustomImage/**
       - tests/**
       - .github/workflows/docker-smoke.yml
   push:
@@ -17,6 +18,7 @@ on:
       - .dockerignore
       - pyproject.toml
       - devops_toolkit/**
+      - Revision/UseADockerfile ToBuildACustomImage/**
       - tests/**
       - .github/workflows/docker-smoke.yml
 
@@ -35,3 +37,7 @@ jobs:
         run: docker run --rm devops-policy-audit-toolkit:smoke --help
       - name: Scan repository mount
         run: docker run --rm -v "${PWD}:/repo:ro" devops-policy-audit-toolkit:smoke /repo --format json
+      - name: Build legacy Nginx lesson image
+        run: docker build -t devops-policy-revision-nginx:smoke "Revision/UseADockerfile ToBuildACustomImage"
+      - name: Validate legacy Nginx lesson image
+        run: docker run --rm --entrypoint nginx devops-policy-revision-nginx:smoke -t
