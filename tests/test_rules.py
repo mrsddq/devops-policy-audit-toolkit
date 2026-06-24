@@ -2,6 +2,8 @@ from pathlib import Path
 from devops_toolkit.models import FileRecord, Severity
 from devops_toolkit.rules import (
     check_docker_root,
+    check_github_actions_workflow,
+    check_iam_policy_json,
     check_kubernetes_manifests,
     check_python_hardcoded_paths,
     check_shell_safety,
@@ -45,3 +47,15 @@ def test_kubernetes_detects_workload_without_resources():
     manifest = "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: app\n"
     findings = check_kubernetes_manifests(record("yaml", manifest, "deploy.yaml"))
     assert any(f.rule_id == "K8S_NO_RESOURCES" for f in findings)
+
+
+def test_github_actions_detects_missing_permissions():
+    workflow = "name: ci\non: push\njobs:\n  test:\n    steps:\n      - uses: actions/checkout@v4\n"
+    findings = check_github_actions_workflow(record("yaml", workflow, ".github/workflows/ci.yml"))
+    assert any(f.rule_id == "GHA_NO_PERMISSIONS" for f in findings)
+
+
+def test_iam_policy_detects_wildcards():
+    policy = '{"Statement":[{"Effect":"Allow","Action":"*","Resource":"*"}]}'
+    findings = check_iam_policy_json(record("json", policy, "iam-policy.json"))
+    assert any(f.rule_id == "IAM_WILDCARD_ACTION" for f in findings)

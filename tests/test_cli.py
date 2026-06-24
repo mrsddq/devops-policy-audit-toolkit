@@ -25,6 +25,20 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["scanned_files"], 1)
         self.assertEqual(payload["findings"][0]["rule_id"], "DOCKER_NO_USER")
 
+    def test_cli_writes_html_report(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory) / "repo"
+            root.mkdir()
+            (root / "Dockerfile").write_text("FROM python:3.12\n", encoding="utf-8")
+            output = Path(directory) / "report.html"
+
+            exit_code = main([str(root), "--format", "html", "--output", str(output)])
+            html = output.read_text(encoding="utf-8")
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("DevOps Repository Audit Report", html)
+        self.assertIn("DOCKER_NO_USER", html)
+
     def test_cli_honors_policy_config(self):
         with TemporaryDirectory() as directory:
             root = Path(directory) / "repo"

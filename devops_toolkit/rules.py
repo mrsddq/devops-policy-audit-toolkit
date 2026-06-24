@@ -137,12 +137,49 @@ def check_python_hardcoded_paths(record: FileRecord) -> list[Finding]:
     return results
 
 
+def check_github_actions_workflow(record: FileRecord) -> list[Finding]:
+    if record.kind != "yaml" or not record.relative_path.startswith(".github/workflows/"):
+        return []
+    results: list[Finding] = []
+    text = record.text
+    if "pull_request_target:" in text:
+        results.append(finding(record, "GHA_PULL_REQUEST_TARGET", "Workflow uses pull_request_target", Severity.HIGH, None, None, "Use pull_request for untrusted code, or isolate pull_request_target workflows from checkout and script execution."))
+    if "permissions:" not in text:
+        results.append(finding(record, "GHA_NO_PERMISSIONS", "Workflow does not declare token permissions", Severity.MEDIUM, None, None, "Declare least-privilege GITHUB_TOKEN permissions at workflow or job level."))
+    for idx, line in enumerate(record.lines, start=1):
+        stripped = line.strip()
+        if re.search(r"uses:\s*[^@\s]+$", stripped):
+            results.append(finding(record, "GHA_UNPINNED_ACTION", "Workflow action is not pinned to a version", Severity.MEDIUM, idx, stripped, "Pin actions to a version tag or commit SHA."))
+        if re.search(r"run:\s*curl .*?\|\s*(sudo\s+)?bash", stripped):
+            results.append(finding(record, "GHA_CURL_BASH", "Workflow pipes downloaded content into bash", Severity.HIGH, idx, stripped, "Download, checksum, inspect, then execute external scripts."))
+    return results
+
+
+def check_iam_policy_json(record: FileRecord) -> list[Finding]:
+    if record.kind != "json":
+        return []
+    if '"Statement"' not in record.text or '"Effect"' not in record.text:
+        return []
+    results: list[Finding] = []
+    for idx, line in enumerate(record.lines, start=1):
+        stripped = line.strip()
+        if re.search(r'"Action"\s*:\s*"\*"', stripped):
+            results.append(finding(record, "IAM_WILDCARD_ACTION", "IAM policy grants wildcard action", Severity.HIGH, idx, stripped, "Replace Action:* with a narrow action list required by the workload."))
+        if re.search(r'"Resource"\s*:\s*"\*"', stripped):
+            results.append(finding(record, "IAM_WILDCARD_RESOURCE", "IAM policy grants wildcard resource", Severity.MEDIUM, idx, stripped, "Scope Resource to exact ARNs where AWS service support allows it."))
+        if re.search(r'"Effect"\s*:\s*"Allow"', stripped) and "NotAction" in record.text:
+            results.append(finding(record, "IAM_ALLOW_NOTACTION", "IAM policy uses Allow with NotAction", Severity.HIGH, idx, stripped, "Avoid Allow+NotAction because it can grant broad unintended permissions."))
+    return results
+
+
 RULES: list[Rule] = [
     Rule("DOCKER_USER_ROOT", "Detect root containers", {"dockerfile"}, check_docker_root),
     Rule("DOCKER_PINNING", "Detect weak Docker pinning and package hygiene", {"dockerfile"}, check_docker_pin_versions),
     Rule("SHELL_SAFETY", "Detect risky shell automation", {"shell"}, check_shell_safety),
     Rule("TF_STATE_VERSION", "Detect Terraform state/version/secrets issues", {"terraform"}, check_terraform_state_and_version),
     Rule("K8S_WORKLOADS", "Detect Kubernetes workload production gaps", {"yaml"}, check_kubernetes_manifests),
+    Rule("GITHUB_ACTIONS", "Detect GitHub Actions workflow risks", {"yaml"}, check_github_actions_workflow),
+    Rule("IAM_POLICY", "Detect risky IAM policy grants", {"json"}, check_iam_policy_json),
     Rule("JENKINS_PIPELINE", "Detect Jenkins production gaps", {"jenkins"}, check_jenkins_pipeline),
     Rule("PYTHON_PORTABILITY", "Detect Python portability issues", {"python"}, check_python_hardcoded_paths),
 ]

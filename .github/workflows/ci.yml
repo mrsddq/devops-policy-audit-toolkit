@@ -5,6 +5,9 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,6 +23,7 @@ jobs:
       - run: mkdir -p reports
       - run: devops-audit . --config devops-audit.config.json --format markdown --output reports/audit-report.md --fail-on-high
       - run: devops-audit . --config devops-audit.config.json --format json --output reports/audit-report.json
+      - run: devops-audit . --config devops-audit.config.json --format html --output reports/audit-report.html
       - run: devops-audit . --config devops-audit.config.json --format sarif --output reports/audit-report.sarif
       - uses: actions/upload-artifact@v4
         with:

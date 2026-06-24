@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "devops-policy-audit-toolkit"
 version = "0.3.0"
-description = "Static DevOps repository auditor for Docker, Kubernetes, Terraform, Jenkins and shell automation."
+description = "Static DevOps repository auditor for Docker, Kubernetes, Terraform, IAM, GitHub Actions, Jenkins and shell automation."
 requires-python = ">=3.10"
 authors = [{name="Laraib Ahmad Siddiqui"}]
 dependencies = ["PyYAML>=6.0"]

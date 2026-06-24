@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from html import escape
 from .models import AuditSummary, Finding
 
 
@@ -63,6 +64,58 @@ def render_markdown(summary: AuditSummary) -> str:
         rec = (finding.recommendation or "").replace("|", r"\|")
         lines.append(f"| {finding.rule_id} | {finding.severity.value} | `{finding.path}` | {line} | {rec} |")
     return "\n".join(lines) + "\n"
+
+
+def render_html(summary: AuditSummary) -> str:
+    severity_rows = "\n".join(
+        f"<tr><td>{escape(severity)}</td><td>{count}</td></tr>"
+        for severity, count in summary.by_severity.items()
+    )
+    finding_rows = "\n".join(
+        "<tr>"
+        f"<td>{escape(finding.rule_id)}</td>"
+        f"<td>{escape(finding.severity.value)}</td>"
+        f"<td>{escape(finding.path)}</td>"
+        f"<td>{'' if finding.line is None else finding.line}</td>"
+        f"<td>{escape(finding.title)}</td>"
+        f"<td>{escape(finding.recommendation or '')}</td>"
+        "</tr>"
+        for finding in summary.findings
+    )
+    if not finding_rows:
+        finding_rows = "<tr><td colspan=\"6\">No findings detected.</td></tr>"
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DevOps Repository Audit Report</title>
+  <style>
+    body {{ font-family: Arial, sans-serif; margin: 32px; color: #1f2937; }}
+    table {{ border-collapse: collapse; width: 100%; margin-bottom: 24px; }}
+    th, td {{ border: 1px solid #d1d5db; padding: 8px; text-align: left; vertical-align: top; }}
+    th {{ background: #f3f4f6; }}
+    .failed {{ color: #b91c1c; font-weight: 700; }}
+  </style>
+</head>
+<body>
+  <h1>DevOps Repository Audit Report</h1>
+  <p>Root: <code>{escape(summary.root)}</code></p>
+  <p>Scanned files: <strong>{summary.scanned_files}</strong></p>
+  <p>Risk score: <strong>{summary.risk_score}</strong></p>
+  <p>Gate failed: <span class="failed">{str(summary.failed).lower()}</span></p>
+  <h2>Severity Counts</h2>
+  <table>
+    <thead><tr><th>Severity</th><th>Count</th></tr></thead>
+    <tbody>{severity_rows}</tbody>
+  </table>
+  <h2>Findings</h2>
+  <table>
+    <thead><tr><th>Rule</th><th>Severity</th><th>File</th><th>Line</th><th>Finding</th><th>Recommendation</th></tr></thead>
+    <tbody>{finding_rows}</tbody>
+  </table>
+</body>
+</html>
+"""
 
 
 def render_text(summary: AuditSummary) -> str:

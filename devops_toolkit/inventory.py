@@ -19,6 +19,8 @@ def classify_file(path: Path) -> str:
         return "jenkins"
     if suffix in {".tf", ".tfvars"}:
         return "terraform"
+    if suffix == ".json":
+        return "json"
     if suffix in {".yaml", ".yml"}:
         return "yaml"
     if suffix == ".sh":

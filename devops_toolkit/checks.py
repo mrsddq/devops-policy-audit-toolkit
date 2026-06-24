@@ -10,7 +10,7 @@ SECRET_PATTERNS = (
     re.compile(r"-----BEGIN (RSA|OPENSSH|PRIVATE) KEY-----"),
     re.compile(r"(password|secret|token)\s*[:=]\s*['\"]?[A-Za-z0-9_./+=-]{12,}", re.IGNORECASE),
 )
-TEXT_EXTENSIONS = {".groovy", ".md", ".php", ".tf", ".txt", ".yaml", ".yml", ""}
+TEXT_EXTENSIONS = {".groovy", ".json", ".md", ".php", ".tf", ".txt", ".yaml", ".yml", ""}
 
 
 def read_text(path: Path) -> str:
@@ -94,6 +94,34 @@ def check_jenkins(files: tuple[Path, ...]) -> list[Finding]:
     return findings
 
 
+def check_github_actions(files: tuple[Path, ...]) -> list[Finding]:
+    findings = []
+    for path in files:
+        if ".github" not in path.parts or "workflows" not in path.parts:
+            continue
+        text = read_text(path)
+        if "pull_request_target:" in text:
+            findings.append(Finding("github-actions-pr-target", path, "workflow uses pull_request_target", severity="high"))
+        if "permissions:" not in text:
+            findings.append(Finding("github-actions-permissions", path, "workflow has no explicit permissions", severity="medium"))
+    return findings
+
+
+def check_iam_policies(files: tuple[Path, ...]) -> list[Finding]:
+    findings = []
+    for path in files:
+        if path.suffix.lower() != ".json":
+            continue
+        text = read_text(path)
+        if '"Statement"' not in text or '"Effect"' not in text:
+            continue
+        if '"Action": "*"' in text or '"Action":"*"' in text:
+            findings.append(Finding("iam-wildcard-action", path, "IAM policy grants wildcard actions", severity="high"))
+        if '"Resource": "*"' in text or '"Resource":"*"' in text:
+            findings.append(Finding("iam-wildcard-resource", path, "IAM policy grants wildcard resources", severity="medium"))
+    return findings
+
+
 def run_all_checks(inventory: FileInventory) -> list[Finding]:
     files = (
         inventory.terraform_files
@@ -108,6 +136,8 @@ def run_all_checks(inventory: FileInventory) -> list[Finding]:
         *check_secret_markers(files),
         *check_terraform(inventory.terraform_files),
         *check_kubernetes_yaml(inventory.yaml_files),
+        *check_github_actions(inventory.yaml_files),
+        *check_iam_policies(inventory.other_files),
         *check_jenkins(inventory.groovy_files),
     ]
 
