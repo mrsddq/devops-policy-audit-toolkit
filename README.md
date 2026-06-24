@@ -67,3 +67,7 @@ devops-audit . --baseline reports/baseline.json --fail-on-high
 ```
 
 The policy file controls severity gates, ignored paths, and documented rule overrides. Baselines are versioned JSON files that let an existing repository fail only on new findings while older exceptions are being remediated.
+
+## Portfolio Evidence
+
+See [docs/PORTFOLIO_EVIDENCE.md](docs/PORTFOLIO_EVIDENCE.md) for validation commands, report artifacts, and reviewer proof points.
