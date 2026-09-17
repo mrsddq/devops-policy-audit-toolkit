@@ -54,18 +54,35 @@ def build_baseline(findings: Iterable[Finding]) -> dict[str, object]:
 def write_baseline(path: str | Path, findings: Iterable[Finding]) -> None:
     baseline_path = Path(path)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
-    baseline_path.write_text(json.dumps(build_baseline(findings), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    baseline_path.write_text(
+        json.dumps(build_baseline(findings), indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def load_baseline(path: str | Path) -> set[str]:
     baseline_path = Path(path)
     raw = json.loads(baseline_path.read_text(encoding="utf-8"))
-    if int(raw.get("version", 0)) != BASELINE_VERSION:
+    if (
+        not isinstance(raw, dict)
+        or type(raw.get("version")) is not int
+        or raw["version"] != BASELINE_VERSION
+    ):
         raise ValueError(f"Unsupported baseline version in {baseline_path}")
-    return {str(item["fingerprint"]) for item in raw.get("findings", [])}
+    entries = raw.get("findings")
+    if not isinstance(entries, list) or not all(
+        isinstance(item, dict)
+        and isinstance(item.get("fingerprint"), str)
+        and len(item["fingerprint"]) == 64
+        and all(char in "0123456789abcdef" for char in item["fingerprint"])
+        for item in entries
+    ):
+        raise ValueError(f"Invalid baseline findings in {baseline_path}")
+    return {item["fingerprint"] for item in entries}
 
 
-def filter_new_findings(findings: Iterable[Finding], baseline_path: str | Path | None) -> list[Finding]:
+def filter_new_findings(
+    findings: Iterable[Finding], baseline_path: str | Path | None
+) -> list[Finding]:
     items = list(findings)
     if baseline_path is None:
         return items

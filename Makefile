@@ -5,7 +5,7 @@ install:
 	python -m pip install -e .[dev]
 
 test:
-	python -m unittest discover -s tests
+	python -m pytest
 
 audit:
 	python -m devops_toolkit.cli . --config devops-audit.config.json --format text --fail-on-high

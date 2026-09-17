@@ -11,29 +11,43 @@ from .sarif import render_sarif
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Audit DevOps repositories for production-readiness issues.")
+    parser = argparse.ArgumentParser(
+        description="Audit DevOps repositories for production-readiness issues."
+    )
     parser.add_argument("root", nargs="?", default=".", help="Repository path to scan")
     parser.add_argument("--config", type=Path, help="Optional JSON/YAML policy configuration")
-    parser.add_argument("--baseline", type=Path, help="Existing baseline JSON; only new findings are reported")
-    parser.add_argument("--write-baseline", type=Path, help="Write a baseline JSON for current findings")
-    parser.add_argument("--format", choices=["text", "json", "markdown", "html", "sarif"], help="Report format")
-    parser.add_argument("--fail-on-high", action="store_true", help="Exit with code 2 when high/critical findings exist")
+    parser.add_argument(
+        "--baseline", type=Path, help="Existing baseline JSON; only new findings are reported"
+    )
+    parser.add_argument(
+        "--write-baseline", type=Path, help="Write a baseline JSON for current findings"
+    )
+    parser.add_argument(
+        "--format", choices=["text", "json", "markdown", "html", "sarif"], help="Report format"
+    )
+    parser.add_argument(
+        "--fail-on-high",
+        action="store_true",
+        help="Exit with code 2 when high/critical findings exist",
+    )
     parser.add_argument("--output", type=Path, help="Optional file path for the report")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    config = load_config(args.config)
     try:
+        config = load_config(args.config)
         summary = audit_repository(args.root)
-    except (FileNotFoundError, NotADirectoryError) as exc:
+        summary.findings = config.policy.filter_findings(summary.findings)
+        # Read the old baseline before writing, including when paths are the same.
+        new_findings = filter_new_findings(summary.findings, args.baseline)
+        if args.write_baseline:
+            write_baseline(args.write_baseline, summary.findings)
+        summary.findings = new_findings
+    except (OSError, ValueError, RuntimeError) as exc:
         sys.stderr.write(f"{exc}\n")
         return 2
-    summary.findings = config.policy.filter_findings(summary.findings)
-    if args.write_baseline:
-        write_baseline(args.write_baseline, summary.findings)
-    summary.findings = filter_new_findings(summary.findings, args.baseline)
 
     report_format = args.format or config.default_format
     if report_format == "json":

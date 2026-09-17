@@ -23,7 +23,7 @@ This repository contains a working Python package, CLI entry point, static analy
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
-python -m unittest discover -s tests
+python -m pytest
 devops-audit . --config devops-audit.config.json --format markdown --output reports/audit.md --fail-on-high
 ```
 
@@ -67,6 +67,15 @@ devops-audit . --baseline reports/baseline.json --fail-on-high
 ```
 
 The policy file controls severity gates, ignored paths, and documented rule overrides. Baselines are versioned JSON files that let an existing repository fail only on new findings while older exceptions are being remediated.
+
+Overrides require a non-empty reason. Optional `expires: "YYYY-MM-DD"` dates are
+valid through the named UTC date; expired exceptions no longer suppress findings.
+Invalid policy severities, formats, or baseline files exit with status 2 instead
+of silently weakening a gate. If `--baseline` and `--write-baseline` name the same
+file, the gate still evaluates against the previous contents before updating it.
+The scanner prunes vendor directories and skips symbolic links so a scan stays
+within its selected repository. It is a static heuristic auditor, not a complete
+security assessment or a Terraform/Kubernetes semantic validator.
 
 ## Portfolio Evidence
 
