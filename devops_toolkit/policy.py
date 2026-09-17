@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date, datetime, timezone
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Iterable
@@ -15,7 +16,26 @@ class PolicyOverride:
     reason: str
     expires: str | None = None
 
-    def matches(self, finding: Finding) -> bool:
+    def __post_init__(self) -> None:
+        if not all(
+            isinstance(value, str) and value.strip()
+            for value in (self.rule_id, self.path_pattern, self.reason)
+        ):
+            raise ValueError("override rule_id, path_pattern and reason must be non-empty strings")
+        if self.expires is not None:
+            if not isinstance(self.expires, str):
+                raise ValueError("override expires must be a YYYY-MM-DD string")
+            try:
+                parsed = date.fromisoformat(self.expires)
+            except ValueError as exc:
+                raise ValueError("override expires must be a YYYY-MM-DD string") from exc
+            if parsed.isoformat() != self.expires:
+                raise ValueError("override expires must be a YYYY-MM-DD string")
+
+    def matches(self, finding: Finding, *, today: date | None = None) -> bool:
+        current_date = today if today is not None else datetime.now(timezone.utc).date()
+        if self.expires is not None and date.fromisoformat(self.expires) < current_date:
+            return False
         return self.rule_id == finding.rule_id and fnmatch(finding.path, self.path_pattern)
 
 
