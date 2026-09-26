@@ -1,4 +1,7 @@
 from pathlib import Path
+import pytest
+
+from devops_toolkit.audit import audit_repository
 from devops_toolkit.inventory import build_inventory, classify_file
 
 
@@ -27,3 +30,21 @@ def test_inventory_ignores_vendor_directories(tmp_path):
 
     assert len(records) == 1
     assert records[0].relative_path == "Dockerfile"
+
+
+@pytest.mark.parametrize(
+    "name,text,rule_id",
+    [
+        ("Dockerfile.prod", "FROM python:3.12\nUSER root\n", "DOCKER_USER_ROOT"),
+        ("deploy.bash", "chmod 777 data\n", "SHELL_WORLD_WRITABLE"),
+        ("deploy.zsh", "chmod 777 data\n", "SHELL_WORLD_WRITABLE"),
+        ("deploy.jenkinsfile", "pipeline { }\n", "JENKINS_NO_OPTIONS"),
+    ],
+)
+def test_supported_file_variants_reach_their_audit_rules(tmp_path, name, text, rule_id):
+    (tmp_path / name).write_text(text, encoding="utf-8")
+
+    summary = audit_repository(tmp_path)
+
+    assert summary.scanned_files == 1
+    assert any(f.path == name and f.rule_id == rule_id for f in summary.findings)

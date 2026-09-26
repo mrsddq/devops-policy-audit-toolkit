@@ -40,7 +40,7 @@ def classify_file(path: Path) -> str:
     suffix = path.suffix.lower()
     if name in {"dockerfile", "dockerfile.prod"} or suffix == ".dockerfile":
         return "dockerfile"
-    if name in {"jenkinsfile", "jenkinsfile.groovy"} or suffix == ".groovy":
+    if name in {"jenkinsfile", "jenkinsfile.groovy"} or suffix in {".groovy", ".jenkinsfile"}:
         return "jenkins"
     if suffix in {".tf", ".tfvars"}:
         return "terraform"
@@ -48,7 +48,7 @@ def classify_file(path: Path) -> str:
         return "json"
     if suffix in {".yaml", ".yml"}:
         return "yaml"
-    if suffix == ".sh":
+    if suffix in {".sh", ".bash", ".zsh"}:
         return "shell"
     if suffix == ".py":
         return "python"
@@ -58,7 +58,7 @@ def classify_file(path: Path) -> str:
 def is_text_candidate(path: Path) -> bool:
     name = path.name.lower()
     suffix = path.suffix.lower()
-    return name in {"dockerfile", "jenkinsfile", "makefile"} or suffix in TEXT_EXTENSIONS
+    return classify_file(path) != "text" or name == "makefile" or suffix in TEXT_EXTENSIONS
 
 
 def iter_source_files(root: Path) -> list[Path]:
