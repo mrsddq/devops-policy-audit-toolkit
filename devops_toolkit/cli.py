@@ -39,6 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         config = load_config(args.config)
         summary = audit_repository(args.root)
+        summary.fail_on = config.policy.fail_on
         summary.findings = config.policy.filter_findings(summary.findings)
         # Read the old baseline before writing, including when paths are the same.
         new_findings = filter_new_findings(summary.findings, args.baseline)
@@ -67,7 +68,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         sys.stdout.write(output)
 
-    if args.fail_on_high and config.policy.should_fail(summary.findings):
+    if args.fail_on_high and summary.failed:
         return 2
     return 0
 

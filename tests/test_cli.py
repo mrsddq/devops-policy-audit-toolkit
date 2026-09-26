@@ -6,6 +6,8 @@ from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+import pytest
+
 from devops_toolkit.cli import main
 
 
@@ -81,6 +83,24 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(exit_code, 2)
         self.assertIn("scan root does not exist", stderr.getvalue())
+
+
+@pytest.mark.parametrize(
+    "fail_on,user,expected_failure", [("medium", "1000", True), ("critical", "root", False)]
+)
+def test_report_gate_matches_configured_cli_gate(tmp_path, capsys, fail_on, user, expected_failure):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "Dockerfile").write_text(f"FROM python:latest\nUSER {user}\n", encoding="utf-8")
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({"policy": {"fail_on": [fail_on]}}), encoding="utf-8")
+
+    exit_code = main([str(repo), "--config", str(config), "--fail-on-high", "--format", "json"])
+    report = json.loads(capsys.readouterr().out)
+
+    assert exit_code == (2 if expected_failure else 0)
+    assert report["failed"] is expected_failure
+    assert report["summary"]["failed"] is expected_failure
 
 
 if __name__ == "__main__":

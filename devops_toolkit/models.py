@@ -110,6 +110,7 @@ class AuditSummary:
     scanned_files: int
     findings: list[Finding]
     inventory: FileInventory | None = None
+    fail_on: tuple[Severity, ...] = (Severity.HIGH, Severity.CRITICAL)
 
     @property
     def risk_score(self) -> int:
@@ -124,7 +125,7 @@ class AuditSummary:
 
     @property
     def failed(self) -> bool:
-        return any(coerce_severity(f.severity) in {Severity.HIGH, Severity.CRITICAL} for f in self.findings)
+        return any(coerce_severity(f.severity) in self.fail_on for f in self.findings)
 
     def unique_findings(self) -> list[Finding]:
         seen: set[tuple[str, str, int | None, str | None]] = set()
